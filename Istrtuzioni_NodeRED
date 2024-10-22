@@ -1,0 +1,16 @@
+NodeRED
+
+Descrizione:
+
+Slider per K, Q e D: Tre slider per controllare le regioni K (Sinistra), Q (Destra) e D (Camera Servo), dove si possono impostare i valori desiderati.
+K: Valore da 0 a 100
+Q: Valore da 0 a 100
+D: Valore da 0 a 180
+
+Interruttori per E, F e M: Tre interruttori per controllare le regioni E (Evitare), F (Insegui) e M (Luce). Questi interruttori inviano un valore booleano (1 per acceso, 0 per spento).
+E: Evitare (Attivato o Disattivato)
+F: Insegui (Attivato o Disattivato)
+M: Luce (Accesa o Spenta)
+
+Visualizzazione dei Valori per N, O, P: Queste regioni mostreranno i valori ricevuti.
+Pulsante per I: Un pulsante per controllare la regione I (Fermo). Puoi configurarlo per inviare un comando specifico quando viene premuto.
