@@ -1,0 +1,60 @@
+#include "Controllo_Auto.h"
+
+#include <Arduino.h>
+#if defined(ARDUINO_AVR_UNO)
+#include <SoftPWM.h>
+#endif
+
+#define MOTOR_POWER_MIN 28  // 28/255
+
+/** 
+ * @brief Inizializza il motore e (blocca) l'inizializzazione della bussola
+ */
+void carBegin() {
+  #if defined(ARDUINO_AVR_UNO)
+  for (uint8_t i = 0; i < 4; i++) {
+    SoftPWMSet(MOTOR_PINS[i], 0);
+    SoftPWMSetFadeTime(MOTOR_PINS[i], 100, 100);
+  }
+  #endif
+}
+
+/** 
+ * @name Funzioni di movimento semplici
+ */
+void carForward(int8_t power)       { carSetMotors( power,  power); }
+void carBackward(int8_t power)      { carSetMotors(-power, -power); }
+void carTurnLeft(int8_t power)      { carSetMotors(-power,  power); }
+void carTurnRight(int8_t power)     { carSetMotors( power, -power); }
+void carStop()                      { carSetMotors(     0,      0); }
+
+/** 
+ * @brief Imposta la velocità per 2 motori
+ *
+ * @param power0  0 ~ 100
+ * @param power1  0 ~ 100
+ */
+void carSetMotors(int8_t power0, int8_t power1) {
+  bool dir[2];
+  int8_t power[2] = {power0, power1};
+  int8_t newPower[2];
+
+  for (uint8_t i = 0; i < 2; i++) {
+    dir[i] = power[i] > 0;
+
+    if (MOTOR_DIRECTIONS[i]) dir[i] = !dir[i];
+
+    if (power[i] == 0) {
+      newPower[i] = 0;
+    } else {
+      newPower[i] = map(abs(power[i]), 0, 100, MOTOR_POWER_MIN, 255);
+    }
+    #if defined(ARDUINO_AVR_UNO)
+    SoftPWMSet(MOTOR_PINS[i*2], dir[i] * newPower[i]);
+    SoftPWMSet(MOTOR_PINS[i*2+1], !dir[i] * newPower[i]);
+    #elif defined(ARDUINO_MINIMA)
+    analogWrite(MOTOR_PINS[i*2], dir[i] * newPower[i]);
+    analogWrite(MOTOR_PINS[i*2+1], !dir[i] * newPower[i]);
+    #endif
+  }
+}
